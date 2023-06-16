@@ -1,0 +1,5 @@
+##sequence-region I53-50-v4N 1 1290
+##species 
+I53-50-v4N	RefSeq	CDS	1	1290	.	+	0	ID=cds0;Parent=gene0;Dbxref=ASAP:ABE-0000006,UniProtKB/Swiss-Prot:P0AD86,Genbank:NP_414542.1,EcoGene:EG11277,GeneID:944742;Name=NP_414542.1;gbkey=CDS;gene=Capsule;product=makes capsule;protein_id=NP_414542.1;transl_table=11
+I53-50-v4N	RefSeq	CDS	1	1290	.	-	0	ID=cds1;Parent=gene1;Dbxref=ASAP:ABE-0000008,UniProtKB/Swiss-Prot:P00561,Genbank:NP_414543.1,EcoGene:EG10998,GeneID:945803;Name=NP_414543.1;gbkey=CDS;gene=Capsule_rev;product=capsule reverse;protein_id=NP_414543.1;transl_table=11
+
