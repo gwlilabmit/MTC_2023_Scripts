@@ -10,6 +10,8 @@ The raw data processing for this project is standard for the analysis done in th
 - Conversion of density files to wigs (the default format used in our lab to view sequencing results). This is done through a custom python script `density_to_wig.py`.
 - Conversion of wigs to read/gene dataframe files.  This is done through a custom python file that requires a CDS file for the genome annotation that the reads were aligned to: `wig_to_df.py`.
 
+* The `analysis_helper_functions.pyc` file just contains some helper files for some of the other python files. 
+
 If you wish to do this yourself all you need to do is run the bash script `process_seq.sh` and provide a relevant `config.sh` file as the argument to set the relevant parameters.  You will likely need to modify the `config.sh` file to reflect the locations of files to analyze on your machine (and where you would like intermediate files to be stored).
 
 Also provided here are the bowtie indices and the cds files that were used in our analysis.
