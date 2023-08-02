@@ -1,3 +1,0 @@
-,Name,Strand,Start,Stop,Note,Genome,Counts
-0,Capsule,+,1,1290,makes capsule,capsule,0
-1,Capsule_rev,-,1,1290,capsule reverse,capsule,0

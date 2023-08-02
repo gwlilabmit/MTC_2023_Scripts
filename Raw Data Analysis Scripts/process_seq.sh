@@ -17,11 +17,11 @@ module load bedtools
 source $1
 
 #First we trim the files if that has been requested:
-if $Trimming; then
+if [$Trimming = true]; then
 	echo -e "\n\n--------------------------------------------\nTrimming Files"
-	for f in ${Raw_Data_Location}*.fastq; do
+	for f in ${Raw_Data_Location}*$Trim_End; do
 		echo "Trimming $f ..."
-		python /home/mirae/data/Sequencing/Sequencing_Analysis/trim_reads.py $f $Trim_Seq $Trim_Save $Trim_End
+		python /home/mirae/data/Publication_Raw_Data_Processing/trim_reads.py $f $Trim_Seq $Trim_Save $Trim_End
 	done
 else
 	Trim_Save=$Raw_Data_Location
@@ -59,7 +59,7 @@ for f in ${Depth_Save}*_depth.txt; do
 	Wig_File=${Wig_Save}${f_no_start/_depth.txt/.wig}
 	if [ ! -f "$Wig_File" ]; then
 		echo "Converting ${f_no_start/_depth.txt/} depth file into a wig file..."
-		python /home/mirae/data/Sequencing/Sequencing_Analysis/density_to_wig.py $f ${Wig_Save}${f_no_start/_depth.txt/.wig}
+		python /home/mirae/data/Publication_Raw_Data_Processing/density_to_wig.py $f ${Wig_Save}${f_no_start/_depth.txt/.wig}
 	fi
 done
 
@@ -70,7 +70,7 @@ if [ -d "$CDS_Dir" ]; then
 	for f in ${Wig_Save}*_minus.wig; do
 		f_no_start=${f##*/}
 		echo "Making ${DataFrame_Save}${f_no_start/_minus.wig/} dataframe.."
-		python /home/mirae/data/Sequencing/Sequencing_Analysis/wig_to_df.py ${f/_minus.wig/} $CDS_Dir $CDS_Files $CDS_Genomes $CDS_Names ${DataFrame_Save}${f_no_start/_minus.wig/}
+		python /home/mirae/data/Publication_Raw_Data_Processing/wig_to_df.py ${f/_minus.wig/} $CDS_Dir $CDS_Files $CDS_Genomes $CDS_Names ${DataFrame_Save}${f_no_start/_minus.wig/}
 	done
 else
 	echo "No valid CDS directory was provided so not generating gene count CDS"

@@ -1,0 +1,40 @@
+Experiment: Cap_I_TATGCG
+mRNA:  2538833
+rRNA:  4109025
+Percent rRNA: 61.81
+
+Experiment: Cap_rRNA_TGCTAG
+mRNA:  10814152
+rRNA:  13176084
+Percent rRNA: 54.92
+
+Experiment: Cap_TCACTG
+mRNA:  10105871
+rRNA:  19898584
+Percent rRNA: 66.32
+
+Experiment: Cap_U_ATGAAC
+mRNA:  1694638
+rRNA:  7516676
+Percent rRNA: 81.60
+
+Experiment: Cell_1_10_GCTCAA
+mRNA:  2896586
+rRNA:  27579883
+Percent rRNA: 90.50
+
+Experiment: Cell_rRNA_GTCTGA
+mRNA:  2903293
+rRNA:  3394756
+Percent rRNA: 53.90
+
+Experiment: WT_I_TTGAGT
+mRNA:  4945224
+rRNA:  22791912
+Percent rRNA: 82.17
+
+Experiment: WT_U_TGTTGC
+mRNA:  4402566
+rRNA:  23713936
+Percent rRNA: 84.34
+

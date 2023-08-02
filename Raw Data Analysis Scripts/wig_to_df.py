@@ -1,56 +1,70 @@
 import sys
 import pandas as pd
 import os
+import numpy as np
 
-def get_dataframe(gen, cds_dict, genomes, file):
 
+def get_dataframe(gen, cds_dict, genomes, direction):
     for g in genomes:
         if g in gen:
             cds_df = cds_dict[g].copy()
-    if 'minus' in file:
-        cds_df = cds_df[cds_df.Strand == '+']
-    else:
-        cds_df = cds_df[cds_df.Strand == '-']
+    cds_df = cds_df[cds_df.Strand == direction]
     cds_df = cds_df.reset_index()
-    cds_df = cds_df.drop(columns = ['index'])
+    cds_df = cds_df.drop(columns=["index"])
     return cds_df
 
-def gene_count(wig_prefix, cds_dict, names, genomes, save_prefix):
 
-    print('Aligning for sample {}'.format(wig_prefix))
-    file_names = [wig_prefix + '_plus.wig', wig_prefix + '_minus.wig']
-    dfs =[]
-    for file in file_names:
-        print('Now adding reads from file {}'.format(file))
-        with open(file, 'r') as f:
+def gene_count(wig_prefix, cds_dict, names, genomes, save_prefix):
+    print("Aligning for sample {}".format(wig_prefix))
+    file_names = [wig_prefix + "_plus.wig", wig_prefix + "_minus.wig"]
+    direction = ["+", "-"]
+    reads = {}
+    dfs = []
+    for ind, file in enumerate(file_names):
+        print("Now adding reads from file {}".format(file))
+        with open(file, "r") as f:
             l = f.readline()
             l = f.readline()
             l = l.rstrip()
-            gen = l[l.rfind('=')+1:]
-            temp_df = get_dataframe(gen, cds_dict, genomes, file)
-            num_genes = len(temp_df)
-            cur_ind = 0
+            gen = l[l.rfind("=") + 1 :]
+            pos_arr = []
+            count_arr = []
             for l in f:
                 l = l.rstrip()
-                if '=' in l:
-                    dfs.append(temp_df)
-                    gen = l[l.rfind('=')+1:]
-                    temp_df = get_dataframe(gen, cds_dict, genomes, file)
-                    print(temp_df.head)
-                    num_genes = len(temp_df)
-                    cur_ind = 0
-                else:
-                    pos, counts = l.split('\t')
-                    pos = int(float((pos)))
-                    counts = int(float(counts))
-                    while cur_ind <  num_genes and pos > temp_df.iloc[cur_ind].Stop:
-                        cur_ind += 1
-                    if cur_ind < num_genes:
-                        if pos > temp_df.iloc[cur_ind].Start:
-                            temp_df.at[cur_ind, 'Counts'] += counts
+                try:
+                    pos, counts = l.split("\t")
+                    pos_arr.append(int(float(pos)))
+                    count_arr.append(int(float(counts)))
+                except ValueError:  # We have reached new genome:
+                    reads["".join([gen, "*", direction[ind]])] = {
+                        "Positions": np.asarray(pos_arr),
+                        "Counts": np.asarray(count_arr),
+                    }
+                    gen = l[l.rfind("=") + 1 :]
+                    pos_arr = []
+                    count_arr = []
+        reads["".join([gen, "*", direction[ind]])] = {
+            "Positions": np.asarray(pos_arr),
+            "Counts": np.asarray(count_arr),
+        }
+    for gen_ind in reads:
+        gen = gen_ind[: gen_ind.find("*")]
+        direction = gen_ind[gen_ind.find("*") + 1 :]
+        temp_df = get_dataframe(gen, cds_dict, genomes, direction)
+        temp_df["Counts"] = temp_df.apply(
+            lambda row: sum(
+                reads[gen_ind]["Counts"][
+                    (reads[gen_ind]["Positions"] < row["Stop"])
+                    & (reads[gen_ind]["Positions"] > row["Start"])
+                ]
+            ),
+            axis=1,
+        )
+
         dfs.append(temp_df)
+
     merge_df = pd.concat(dfs, ignore_index=True, sort=False)
-    merge_df.to_csv(''.join([save_prefix, '_dataframe.txt']))
+    merge_df.to_csv("".join([save_prefix, "_dataframe.txt"]))
 
 
 def make_CDS_df(cds_file, name):
@@ -61,49 +75,57 @@ def make_CDS_df(cds_file, name):
     Returns a pandas dataframe with the relevant columsn of the original CDS.
     """
 
-    cds_saved_file = ''.join([cds_file[:cds_file.rfind('.txt')], '_processed.txt'])
+    cds_saved_file = "".join([cds_file[: cds_file.rfind(".txt")], "_processed.txt"])
     if os.path.exists(cds_saved_file):
-        df = pd.read_csv(cds_saved_file, index_col = 0)
+        df = pd.read_csv(cds_saved_file, index_col=0)
         return df
 
-    cds_df = pd.DataFrame(columns = ['Name', 'Strand', 'Start', 'Stop', 'Note'])
+    cds_df = pd.DataFrame(columns=["Name", "Strand", "Start", "Stop", "Note"])
 
-    with open(cds_file, 'r') as cds:
+    with open(cds_file, "r") as cds:
         cds.readline()
         cds.readline()
 
         for l in cds:
-            space_break = l.split('\t')
-            if len(space_break) > 3 and space_break[2] in ['CDS', 'rRNA']:
+            space_break = l.split("\t")
+            if len(space_break) > 3 and space_break[2] in ["CDS", "rRNA"]:
                 start = int(space_break[3])
                 end = int(space_break[4])
                 strand = space_break[6]
-                colon_break = space_break[8].split(';')
-                gene_name = 'error'
-                note = ''
+                colon_break = space_break[8].split(";")
+                gene_name = "error"
+                note = ""
                 for i in colon_break:
-                    if i.startswith('gene='):
-                        gene_name = i[i.index('=')+1:]
-                    if i.startswith('Note='):
-                        note = i[i.index('=')+1:]
-                    if i.startswith('product='):
-                        product = i[i.index('=')+1:]
-                if note == '':
+                    if i.startswith("gene="):
+                        gene_name = i[i.index("=") + 1 :]
+                    if i.startswith("Note="):
+                        note = i[i.index("=") + 1 :]
+                    if i.startswith("product="):
+                        product = i[i.index("=") + 1 :]
+                if note == "":
                     note = product
-                cds_df = cds_df.append({'Name' : gene_name, 'Strand' : strand, 'Start' : start, 'Stop': end, 'Note': note},
-                        ignore_index = True)
+                cds_df = cds_df.append(
+                    {
+                        "Name": gene_name,
+                        "Strand": strand,
+                        "Start": start,
+                        "Stop": end,
+                        "Note": note,
+                    },
+                    ignore_index=True,
+                )
 
-        cds_df = cds_df.sort_values(by = ['Strand', 'Start'])
+        cds_df = cds_df.sort_values(by=["Strand", "Start"])
         cds_df = cds_df.reset_index()
-        cds_df = cds_df.drop(columns = ['index'])
-        cds_df['Genome'] = [name for i in range(len(cds_df.Name))]
-        cds_df['Counts'] = [0 for _ in range(len(cds_df.Name))]
+        cds_df = cds_df.drop(columns=["index"])
+        cds_df["Genome"] = [name for _ in range(len(cds_df.Name))]
+        cds_df["Counts"] = [0 for _ in range(len(cds_df.Name))]
         cds_df.to_csv(cds_saved_file)
 
     return cds_df
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     """
     Program starts here when called from command line.
     Expected arguments (in order):
@@ -123,7 +145,7 @@ if __name__ == '__main__':
     save_prefix = sys.argv[6]
 
     cds_dict = {
-        key: make_CDS_df(''.join([cds_folder, cds_files[ind]]), genomes[ind])
+        key: make_CDS_df("".join([cds_folder, cds_files[ind]]), genomes[ind])
         for ind, key in enumerate(genomes)
     }
     gene_count(wig_prefix, cds_dict, names, genomes, save_prefix)
