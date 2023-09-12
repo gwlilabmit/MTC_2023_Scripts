@@ -14,10 +14,14 @@ def get_dataframe(gen, cds_dict, genomes, direction):
     return cds_df
 
 
-def gene_count(wig_prefix, cds_dict, names, genomes, save_prefix):
+def gene_count(wig_prefix, cds_dict, names, genomes, save_prefix, reversed):
     print("Aligning for sample {}".format(wig_prefix))
     file_names = [wig_prefix + "_plus.wig", wig_prefix + "_minus.wig"]
-    direction = ["+", "-"]
+    direction = []
+    if reversed == "true":
+        direction = ["+", "-"]
+    elif reversed == "false":
+        direction = ["-", "+"]
     reads = {}
     dfs = []
     for ind, file in enumerate(file_names):
@@ -47,6 +51,9 @@ def gene_count(wig_prefix, cds_dict, names, genomes, save_prefix):
             "Positions": np.asarray(pos_arr),
             "Counts": np.asarray(count_arr),
         }
+    print("Total Number of Reads:")
+    total = sum(count_arr)
+    print(total)
     for gen_ind in reads:
         gen = gen_ind[: gen_ind.find("*")]
         direction = gen_ind[gen_ind.find("*") + 1 :]
@@ -74,12 +81,6 @@ def make_CDS_df(cds_file, name):
 
     Returns a pandas dataframe with the relevant columsn of the original CDS.
     """
-
-    cds_saved_file = "".join([cds_file[: cds_file.rfind(".txt")], "_processed.txt"])
-    if os.path.exists(cds_saved_file):
-        df = pd.read_csv(cds_saved_file, index_col=0)
-        return df
-
     cds_df = pd.DataFrame(columns=["Name", "Strand", "Start", "Stop", "Note"])
 
     with open(cds_file, "r") as cds:
@@ -88,7 +89,7 @@ def make_CDS_df(cds_file, name):
 
         for l in cds:
             space_break = l.split("\t")
-            if len(space_break) > 3 and space_break[2] in ["CDS", "rRNA"]:
+            if len(space_break) > 3 and space_break[2] in ["CDS"]:
                 start = int(space_break[3])
                 end = int(space_break[4])
                 strand = space_break[6]
@@ -120,7 +121,6 @@ def make_CDS_df(cds_file, name):
         cds_df = cds_df.drop(columns=["index"])
         cds_df["Genome"] = [name for _ in range(len(cds_df.Name))]
         cds_df["Counts"] = [0 for _ in range(len(cds_df.Name))]
-        cds_df.to_csv(cds_saved_file)
 
     return cds_df
 
@@ -143,9 +143,10 @@ if __name__ == "__main__":
     genomes = sys.argv[4].split(",")
     names = sys.argv[5].split(",")
     save_prefix = sys.argv[6]
+    reversed = sys.argv[7]
 
     cds_dict = {
         key: make_CDS_df("".join([cds_folder, cds_files[ind]]), genomes[ind])
         for ind, key in enumerate(genomes)
     }
-    gene_count(wig_prefix, cds_dict, names, genomes, save_prefix)
+    gene_count(wig_prefix, cds_dict, names, genomes, save_prefix, reversed)
