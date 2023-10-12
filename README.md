@@ -30,7 +30,7 @@ In order to run this analysis you will require the following:
   - pandas
 - samtools
 - bedtools
-- bowtie
+- bowtie (version 1)
 
 </details>
 
@@ -39,7 +39,7 @@ In order to run this analysis you will require the following:
 <br>
 
 Each figure or subfigure has its own folder which contains:
-- The final version of each figure that was included in the paper.  Where possible there will be both the png of the file that was included in the paper, and an interactive version of the figure as well.
-- A jupyter notebook which converts the processed data into the figure with annotations.
+- The final version of each figure that was included in the paper.  Where possible there will be both the svg of the image that was included in the paper.
+- A jupyter notebook can recreate the images presented.  (They will also generate an embedded interactive image when run). 
 
 </details>
