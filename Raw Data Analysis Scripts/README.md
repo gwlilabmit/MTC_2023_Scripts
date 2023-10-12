@@ -8,3 +8,5 @@ This folder contains all of the scripts used to process fastq sequencing files u
 - bedtools
 - seqtk
 
+Our raw fastq files are associated with NCBI's SRA BioProject SUB13877560. 
+
