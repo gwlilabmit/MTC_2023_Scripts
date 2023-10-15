@@ -64,7 +64,7 @@ fi
 
 #If a valid CDS_Dir is provided then make a dataframe file with counts for each gene.
 if [ -d "$CDS_Dir" ]; then
-	echo -e "\n--------------------------------------------\nUsing CDS Files to Generate Gene Specifc Counts."
+	echo -e "\n--------------------------------------------\nUsing CDS Files to Generate Gene Specific Counts."
 	echo "Making ${DataFrame_Save}${f_no_start/_minus.wig/} dataframe.."
 	if [ ! -f "$dataframe_file" ]; then
 		python /home/mirae/data/Publication_Raw_Data_Processing/wig_to_df.py ${minus_wig_name/_minus.wig/} $CDS_Dir $CDS_Files $CDS_Genomes $CDS_Names $dataframe_file

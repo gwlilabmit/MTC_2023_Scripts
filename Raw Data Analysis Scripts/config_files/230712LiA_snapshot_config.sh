@@ -3,7 +3,7 @@
 
 #Change these variables to match what is needed in your project:
 
-Genome="/home/mirae/data/Publication_Raw_Data_Processing/bowtie_indices/ecoli_with_mtcs" #"," Seperated list of bowtie indexes to align to.
+Genome="/home/mirae/data/Publication_Raw_Data_Processing/bowtie_indices/ecoli_with_mtcs" #"," Separated list of bowtie indexes to align to.
 Raw_Data_Location="/home/mirae/data/MTC_Publication_Data/230712LiA_Snapshot/raw_fastq_files/" #Folder where the raw data lives.
 Save_Folder_Location="/home/mirae/data/MTC_Publication_Data/230712LiA_Snapshot/" #Folder for where to store all intermediary files.
 Bowtie_Args="-k 1 -v 2"

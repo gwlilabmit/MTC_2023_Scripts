@@ -79,7 +79,7 @@ def make_CDS_df(cds_file, name):
     Makes a dataframe for each CDS file for easy access downstream.
         -cds_file = str with the path of the cds_file of interest.
 
-    Returns a pandas dataframe with the relevant columsn of the original CDS.
+    Returns a pandas dataframe with the relevant columns of the original CDS.
     """
     cds_df = pd.DataFrame(columns=["Name", "Strand", "Start", "Stop", "Note"])
 
@@ -131,9 +131,9 @@ if __name__ == "__main__":
     Expected arguments (in order):
         -wig_file = string of where name of current wig file
         -cds_folder = string path where CDS files are kept
-        -cds_files = `,` seperated str with names of CDS files
-        -genomes = `,` seperated str with the corresponding genomes of the CDS files (eg NC_000913.2)
-        -names = `,` seperated str with names for each genome/CDS pair (eg ecoli)
+        -cds_files = `,` separated str with names of CDS files
+        -genomes = `,` separated str with the corresponding genomes of the CDS files (eg NC_000913.2)
+        -names = `,` separated str with names for each genome/CDS pair (eg ecoli)
         -prefix = str with prefix for save location of the dataframe file.
     """
 
